@@ -1,11 +1,11 @@
 # Microstructure-Property Modeling: ResNet-101
 
-## 1. Abstract
+## 1. INTRODUCTION
 This project implements a PyTorch-based regression model that predicts mechanical properties—tensile strength, yield strength, and elongation—from microstructure images using the ResNet architecture.
 
 ---
 
-## 2. Requirements
+## 2. REQUIREMENTS
 
 The recommended python version is 3.10.0
 The necessary Python packages are listed in requirements.txt
@@ -13,7 +13,7 @@ A CUDA-compatible GPU is recommended for faster training.
 
 ---
 
-## 3. Workflow
+## 3. DESCRIPTION
 
 ### 3.1 `config.py`
 - Configuration file for paths and hyperparameters such as `image_dir`, `crop_size`, `stride`, learning rate, and model variants.
@@ -53,17 +53,15 @@ A CUDA-compatible GPU is recommended for faster training.
 
 ---
 
-## 4. How to Use
+## 4. HOW TO USE
 
-### 4.1 SYNOPSIS
+### 4.1 Synopsis
 
 ```bash
 python run.py <command> [--target=TARGET_COL]
 ```
 
-### 4.2 DESCRIPTION
-
-#### COMMANDS
+### 4.2 Commands and flags
 
 | Command        | Description                                                         |
 |----------------|---------------------------------------------------------------------|
@@ -72,7 +70,6 @@ python run.py <command> [--target=TARGET_COL]
 | `inference`    | Predict properties from images using a trained model                |
 | `both`         | Run both training and inference in one go                           |
 
-#### FLAGS
 
 | Flag                  | Description                               |
 |-----------------------|-------------------------------------------|
@@ -81,24 +78,38 @@ python run.py <command> [--target=TARGET_COL]
 |                       |    `1`: Yield Strength                     |
 |                       |    `2`: Elongation                         |
 
-## 5. Example Commands
+## 5. EXAMPLE
 
 ### 5.1 Prepare data for training with target=0 (Tensile Strength)
+```bash
 python run.py prepare_data --target=0
+```
 
 ### 5.2 Train with existing data (Tensile Strength)
+```bash
 python run.py train --target=0
+```
 
 ### 5.3 Predict using a trained model (Tensile Strength)
+```bash
 python run.py inference --target=0
+```
 
 ### 5.4 Run both training and inference (Tensile Strength)
+```bash
 python run.py both --target=0
+```
 
 ### 5.5 Use alternative data path and settings
+```bash
 python run.py prepare --target=2 --image_dir="alt_data" --crop_size=96 --stride=48
+```
+
+```bash
 python run.py train --target=2 --image_dir="alt_data" --crop_size=96 --stride=48
+```
 
 # or
+```bash
 python run.py both --target=2 --image_dir="alt_data" --crop_size=96 --stride=48
 ```
