@@ -109,7 +109,7 @@ python run.py prepare --target=2 --image_dir="alt_data" --crop_size=96 --stride=
 python run.py train --target=2 --image_dir="alt_data" --crop_size=96 --stride=48
 ```
 
-# or
+### or
 ```bash
 python run.py both --target=2 --image_dir="alt_data" --crop_size=96 --stride=48
 ```
