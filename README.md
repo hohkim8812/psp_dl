@@ -1,5 +1,5 @@
 
-# Deep Learning Approaches for Modeling Process–Structure–Property Relationships in Materials
+# Modeling the relationship between tempering process-microstructure-property of steel using deep learning
 
 This repository provides source code accompanying our research on modeling the **Process–Structure–Property (PSP)** relationships in 42CrMo4 using **deep learning**. The core objective of this study is to explore and implement generative and predictive models that can capture the complex transformations from processing parameters to microstructure, and subsequently from microstructure to mechanical properties.
 
