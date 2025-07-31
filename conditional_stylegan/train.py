@@ -258,6 +258,8 @@ if __name__ == '__main__':
     code_size = 512
     batch_size = 16
     n_critic = 1
+    os.makedirs('sample', exist_ok=True)
+    os.makedirs('checkpoint', exist_ok=True)
 
     parser = argparse.ArgumentParser(description='Progressive Growing of GANs')
 

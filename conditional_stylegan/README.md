@@ -92,7 +92,7 @@ python evaluate.py <args>
 
 #### Crop images and create LMDB datasets
 ```bash
-python prepare_data.py --folder_path ../extended_tensile_test_images --output_root images/128x128 --output_root2 images_fid --img_src_path images --imgout images_lmdb --labelout labels_lmdb --n_worker 4
+python prepare_data.py --folder_path images --output_root images/128x128 --output_root2 images_fid --img_src_path images --imgout images_lmdb --labelout labels_lmdb --n_worker 4
 ```
 
 #### Train StyleGAN from LMDB

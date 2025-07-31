@@ -1,34 +1,47 @@
 from pathlib import Path
 import torch
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# prepare_data.py
+# ------------------------------------------------------------------------------
+# Device configuration
+# ------------------------------------------------------------------------------
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # Automatically select GPU if available
+
+# ------------------------------------------------------------------------------
+# prepare_data.py parameters
+# ------------------------------------------------------------------------------
 image_dir = 'images'  # Directory containing original .tif microstructure images
-#어디에 있어도 바로바로 로드할 수 있게 만들어야함 
-image_files = [f'{i}.tif' for i in range(1, 6)]  # List of image filenames
-label_file = 'tensile_test_result.txt'  # File containing mechanical property data
-crop_size = 128        # Crop size for image patches
-stride = 32            # Stride used in sliding window cropping
-crop_images = 'crop_images'
 
-target_col = 0         # Target property column: 0=tensile, 1=yield, 2=elongation
-group_size = 5
-aug_per_group = 999    # Number of augmentations per group (random label assignment)
+image_files = [f'{i}.tif' for i in range(1, 6)]  # List of raw microstructure image filenames
 
-# dataset.py
-test_size = 0.2            # Fraction of data used for testing
-train_batch_size = 16      # Batch size during training
-test_batch_size = 16       # Batch size during testing
+label_file = 'tensile_test_result.txt'  # CSV or TXT file containing mechanical test results
 
-# model.py and train.py
-resnet_variant = 'resnet101'             # ResNet variant to use
-pretrained_weights = 'IMAGENET1K_V1'     # Pretrained weights source
-in_channels = 1                          # Grayscale image input (1 channel)
+crop_size = 128        # Size of each cropped patch (in pixels, square)
+stride = 32            # Step size for sliding window cropping
+crop_images = 'crop_images'  # Directory where cropped images will be saved
 
-lr = 0.0002            # Learning rate
-num_epochs = 70        # Total training epochs
-model_dir = 'trained_pth' # 학습된 모델 저장 경로 
+target_col = 0         # Column index in label file to predict: 0=tensile strength, 1=yield strength, 2=elongation
+group_size = 5         # Number of rows in label file considered one group (used for label augmentation)
+aug_per_group = 999    # Number of label augmentations per group (random sampling within group range)
 
-# inference.py
-inference_image_dir = 'gen_images_2'     # Directory for generated microstructure images
+# ------------------------------------------------------------------------------
+# dataset.py parameters
+# ------------------------------------------------------------------------------
+test_size = 0.2            # Proportion of dataset to use for testing
+train_batch_size = 16      # Batch size for training DataLoader
+test_batch_size = 16       # Batch size for testing DataLoader
 
+# ------------------------------------------------------------------------------
+# model.py / train.py parameters
+# ------------------------------------------------------------------------------
+resnet_variant = 'resnet101'             # Backbone ResNet version (options: 'resnet18', 'resnet50', 'resnet101')
+pretrained_weights = 'IMAGENET1K_V1'     # Pretrained weight source from torchvision
+in_channels = 1                          # Number of input image channels (1 for grayscale microstructures)
+
+lr = 0.0002            # Learning rate for optimizer
+num_epochs = 70        # Total number of training epochs
+model_dir = 'trained_pth'  # Directory to save trained model checkpoints
+
+# ------------------------------------------------------------------------------
+# inference.py parameters
+# ------------------------------------------------------------------------------
+inference_image_dir = 'gen_images_2'     # Directory containing generated microstructure images for inference

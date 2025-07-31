@@ -8,11 +8,13 @@ from tqdm import tqdm
 from scipy import linalg
 import argparse
 
+# Set random seed for reproducibility
 def set_seed(seed=None):
     if seed is not None:
         np.random.seed(seed)
         torch.manual_seed(seed)
 
+# Resize grayscale images and save them into corresponding label folders
 def resize_and_save_grayscale_images(src_dir, tgt_dir, size, n_per_label):
     os.makedirs(tgt_dir, exist_ok=True)
     for folder in sorted(os.listdir(src_dir), key=lambda x: int(x)):
@@ -29,6 +31,7 @@ def resize_and_save_grayscale_images(src_dir, tgt_dir, size, n_per_label):
                 save_path = os.path.join(tgt_folder, img_file)
                 cv2.imwrite(save_path, img)
 
+# Load grayscale images into a NumPy array and normalize
 def load_images(path, n_per_label):
     images = []
     for folder_name in sorted(os.listdir(path), key=lambda x: int(x)):
@@ -41,9 +44,10 @@ def load_images(path, n_per_label):
             if img is not None:
                 img = img.astype(np.float32) / 255.0 
                 images.append(img)
-    images = np.array(images)[:, np.newaxis, :, :] 
+    images = np.array(images)[:, np.newaxis, :, :]  # Add channel dimension [N, 1, H, W]
     return images
 
+# Custom module to extract features from InceptionV3's Mixed_7c layer
 class PartialInceptionNetwork(nn.Module):
     def __init__(self):
         super().__init__()
@@ -53,12 +57,13 @@ class PartialInceptionNetwork(nn.Module):
         self._features = output
     def forward(self, x):
         if x.shape[1] == 1:
-            x = x.repeat(1, 3, 1, 1)  
+            x = x.repeat(1, 3, 1, 1)  # Convert grayscale to 3-channel
         self.inception(x)
         feats = self._features
         feats = nn.functional.adaptive_avg_pool2d(feats, (1,1)).view(x.shape[0], -1)
         return feats
 
+# Extract activation features from Inception model
 def get_activations(images, batch_size=32):
     model = PartialInceptionNetwork().eval()
     if torch.cuda.is_available():
@@ -74,11 +79,13 @@ def get_activations(images, batch_size=32):
         feats.append(feat)
     return np.concatenate(feats, axis=0)
 
+# Compute mean and covariance of feature activations
 def calculate_activation_statistics(images, batch_size=32):
     act = get_activations(images, batch_size)
     mu, sigma = np.mean(act, axis=0), np.cov(act, rowvar=False)
     return mu, sigma
 
+# Compute Frechet Inception Distance (FID) between two distributions
 def calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
     diff = mu1 - mu2
     covmean, _ = linalg.sqrtm(sigma1.dot(sigma2), disp=False)
@@ -89,11 +96,13 @@ def calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
         covmean = covmean.real
     return diff.dot(diff) + np.trace(sigma1) + np.trace(sigma2) - 2 * np.trace(covmean)
 
+# Wrapper to compute FID from two image sets
 def calculate_fid(images1, images2, batch_size=32):
     mu1, sigma1 = calculate_activation_statistics(images1, batch_size)
     mu2, sigma2 = calculate_activation_statistics(images2, batch_size)
     return calculate_frechet_distance(mu1, sigma1, mu2, sigma2)
 
+# Analyze phase fraction using binarization and compute white/black pixel ratios
 def phase_fraction_analysis(image_dir, output_root, n_per_label=108, threshold=140):
     import pandas as pd
     print(f"Creating output root folder: {output_root}")
@@ -158,6 +167,7 @@ def phase_fraction_analysis(image_dir, output_root, n_per_label=108, threshold=1
     print(f"ferrite fraction: {image_dir} → {output_root}")
     print(f"excel : {excel_output} / TXT: {txt_output}")
 
+# Main script for evaluation pipeline
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--real_src_dir', type=str, default='images_fid')
@@ -174,7 +184,7 @@ def main():
     args = parser.parse_args()
     set_seed(args.seed)
 
-    # 진짜 이미지 리사이즈 (1회만 수행)
+    # Resize real images only if resized folder is missing or empty
     if not os.path.exists(args.real_dir) or not os.listdir(args.real_dir):
         print("Resizing real images...")
         resize_and_save_grayscale_images(args.real_src_dir, args.real_dir, tuple(args.img_size), args.n_per_label)
@@ -202,13 +212,14 @@ def main():
     for step, fid in fid_results:
         print(f"{step}: {fid:.2f}") 
 
+    # If phase fraction analysis is requested
     if args.phase_fraction:
         best_step, best_fid = sorted(fid_results, key=lambda x: x[1])[0]
         print(f"\n==  ({best_step}, {best_fid:.2f}) ==")
         best_gen_dir = os.path.join(args.gen_src_dir_base, best_step)
-        print("최저 FID 모델 원본 이미지 폴더:", best_gen_dir)
-        print("존재 여부:", os.path.exists(best_gen_dir))
-        print("ro:", len(os.listdir(best_gen_dir)) if os.path.exists(best_gen_dir) else "폴더없음") 
+        print("generator images with a low FID:", best_gen_dir)
+        print("existence:", os.path.exists(best_gen_dir))
+        print("exists", len(os.listdir(best_gen_dir)) if os.path.exists(best_gen_dir) else "none") 
 
         phase_fraction_dir = os.path.join("ferrite_fraction", best_step)
         print(f"Phase fraction analysis start on: {best_gen_dir} saving to {phase_fraction_dir}")
