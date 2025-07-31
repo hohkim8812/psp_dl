@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 #prepare_data.py structure
-image_dir=  "../extended_tensile_test_images" 
+image_dir=  "../images" 
 crop_size = 128
 image_size= 128
 image_files = [f'{i}.tif' for i in range(1, 6)]
