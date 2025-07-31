@@ -3,7 +3,7 @@ import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # prepare_data.py
-image_dir = 'extended_tensile_test_images'  # Directory containing original .tif microstructure images
+image_dir = 'images'  # Directory containing original .tif microstructure images
 #어디에 있어도 바로바로 로드할 수 있게 만들어야함 
 image_files = [f'{i}.tif' for i in range(1, 6)]  # List of image filenames
 label_file = 'tensile_test_result.txt'  # File containing mechanical property data
