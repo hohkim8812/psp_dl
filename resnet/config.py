@@ -44,4 +44,4 @@ model_dir = 'trained_pth'  # Directory to save trained model checkpoints
 # ------------------------------------------------------------------------------
 # inference.py parameters
 # ------------------------------------------------------------------------------
-inference_image_dir = 'gen_images_2'     # Directory containing generated microstructure images for inference
+inference_image_dir = 'crop_images'     # Directory containing microstructure images for inference
