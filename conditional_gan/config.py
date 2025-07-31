@@ -5,7 +5,7 @@ from pathlib import Path
 # prepare_data.py related config
 # ===============================
 
-image_dir = "../images"  # Directory containing original raw images
+image_dir = "images"  # Directory containing original raw images
 crop_size = 128          # Size (in pixels) of square crop window
 image_size = 128         # Expected size of full image (assumed square)
 image_files = [f'{i}.tif' for i in range(1, 6)]  # List of image filenames to process

@@ -56,7 +56,7 @@ class Generator(nn.Module):
         out = self.fc(x)
         out = out.view(-1, 128, self.init_size, self.init_size)
         img = self.net(out)
-
+        return img
 
 class Discriminator(nn.Module):
     """
